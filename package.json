@@ -4,12 +4,19 @@
   "description": "react native module to display data in an alphabetical section list, and alphabetical picker on the side",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependancies": {
     "react": "16.0.0-beta.5",
     "react-native": "0.49.3",
     "react-native-section-list-get-item-layout": "^2.2.2",
+  },
+  "devDependencies": {
+    "babel-preset-react-native": "4.0.0",
+    "babel-preset-flow": "^6.23.0",
+    "flow-bin": "0.53.0",
+    "flow-typed": "^2.3.0",
   },
   "author": "",
   "license": "ISC"
