@@ -16,6 +16,10 @@
     "flow-bin": "0.53.0",
     "flow-typed": "^2.3.0"
   },
+  "peerDependencies": {
+    "react-native": "*",
+    "react": "*"
+  },
   "author": "",
   "license": "ISC"
 }
