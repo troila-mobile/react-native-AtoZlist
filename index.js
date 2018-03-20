@@ -1,3 +1,3 @@
-import AtoZlist from 'AtoZList';
+import AtoZlist from "AtoZList";
 
 export default AtoZlist;
