@@ -51,22 +51,33 @@ function convert(data) {
 }
 type Props = {
   +data: Object[], // alphabetically sorted
+  +getItemValue?: (item: any) => string,
   +renderItem: () => React.Node,
   +getItemHeight: (rowData: any, sectionIndex: number, rowIndex: number) => number,
   +containerStyle?: {},
+  +alphabetContainerStyle?: {},
+  +letterStyle?: {},
+  +highlightedLetterStyle?: {},
   +viewOffset?: number,
   +renderSectionHeader?: () => React.Node,
-  +getSectionSeparatorHeight?: (sectionIndex: number, rowIndex: number) => number,
   +getSectionHeaderHeight?: (sectionIndex: number) => number,
   +getSectionFooterHeight?: (sectionIndex: number) => number,
+  +getSectionSeparatorHeight?: (sectionIndex: number, rowIndex: number) => number,
   +listHeaderHeight?: number | (() => number),
 };
 class AtoZlist extends React.Component<Props> {
   static defaultProps = {
-    renderSectionHeader: () => null,
-    viewOffset: 0,
-    letterStyle: {},
     containerStyle: {},
+    getItemValue: item => item.description,
+    alphabetContainerStyle: {},
+    letterStyle: {},
+    highlightedLetterStyle: {},
+    viewOffset: 0,
+    renderSectionHeader: () => null,
+    getSectionHeaderHeight: () => 0,
+    getSectionFooterHeight: () => 0,
+    getSectionSeparatorHeight: () => 0,
+    listHeaderHeight: 0,
   };
   constructor(props) {
     super(props);
@@ -76,6 +87,28 @@ class AtoZlist extends React.Component<Props> {
     if (this.props.data !== nextProps.data) {
       this.setState({ dataSource: convert(nextProps.data) });
     }
+  }
+  getFirstLetterFrom(item) {
+    return /^[a-z]/i.test(this.props.getItemValue(item))
+      ? this.props
+        .getItemValue(item)
+        .slice(0, 1)
+        .toUpperCase()
+      : '#';
+  }
+  convert(data) {
+    const dataSource = data.reduce((list, dataItem) => {
+      const listItem = list.find(
+        item => item.letter && item.letter === this.getFirstLetterFrom(dataItem),
+      );
+      if (!listItem) {
+        list.push({ letter: this.getFirstLetterFrom(dataItem), data: [dataItem] });
+      } else {
+        listItem.data.push(dataItem);
+      }
+      return list;
+    }, []);
+    return dataSource;
   }
   handleOnPress = (letter) => {
     if (letter) {
@@ -95,22 +128,6 @@ class AtoZlist extends React.Component<Props> {
       });
     }
   };
-  renderLetters = () => (
-    <View style={{ flexDirection: 'column', width: 20, justifyContent: 'center' }}>
-      {LETTERS.map(letter => (
-        <TouchableOpacity
-          onPress={() => {
-            this.handleOnPress(letter);
-          }}
-          key={letter}
-        >
-          <Text style={[{ fontSize: 15, textAlign: 'center' }, this.props.letterStyle]}>
-            {letter}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
   render() {
     return (
       <View style={[{ flexDirection: 'row', flex: 1 }, this.props.containerStyle]}>
@@ -123,13 +140,17 @@ class AtoZlist extends React.Component<Props> {
           sections={this.state.dataSource}
           getItemLayout={sectionListGetItemLayout({
             getItemHeight: this.props.getItemHeight,
+            getSeparatorHeight: this.props.getSectionSeparatorHeight,
+            getSectionHeaderHeight: this.props.getSectionHeaderHeight,
+            getSectionFooterHeight: this.props.getSectionFooterHeight,
+            listHeaderHeight: this.props.listHeaderHeight,
           })}
         />
         <TouchableAlphabet
           onTapLetter={this.handleOnPress}
-          containerStyle={{ position: 'absolute', right: 0 }}
-          letterStyle={{ color: '#38f' }}
-          highlightedLetterStyle={{ color: '#248', fontWeight: 'bold' }}
+          containerStyle={[{ position: 'absolute', right: 0 }, this.props.alphabetContainerStyle]}
+          letterStyle={this.props.letterStyle}
+          highlightedLetterStyle={this.props.highlightedLetterStyle}
         />
       </View>
     );
