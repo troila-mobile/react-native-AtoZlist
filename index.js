@@ -1,3 +1,3 @@
-import AtoZlist from "./AtoZList";
+import AtoZlist from "./list";
 
-export default AtoZlist;
+export default AtoZlist
